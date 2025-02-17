@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/BookDoctorView.vue'),
+      component: () => import('../views/HomeView.vue'),
     },
     {
       path: '/doctors',
@@ -17,9 +17,10 @@ const router = createRouter({
       component: () => import('../views/DoctorsView.vue'),
     },
     {
+      // TODO: change :name param to unique identifier ex. :doctorId assuming there's an available API endpoint
       path: '/doctors/:name',
       name: 'book-doctor',
-      component: () => import('../views/BookDoctorView.vue'),
+      component: () => import('../views/DoctorDetailsView.vue'),
     },
   ],
 })
