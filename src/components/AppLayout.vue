@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router'
 import AppLogo from './icons/AppLogo.vue'
 </script>
 <template>
+  <!-- app header -->
   <header class="h-[70px] w-full bg-[white] fixed top-[0] px-[15px]">
     <div class="h-full w-full lg:w-[1000px] m-auto flex justify-between items-center">
       <router-link to="/"><AppLogo alt="ShiftCare" /></router-link>
@@ -18,9 +19,11 @@ import AppLogo from './icons/AppLogo.vue'
       </nav>
     </div>
   </header>
+  <!-- app content -->
   <main class="w-full lg:w-[1000px] mx-auto pt-[90px] px-[15px] lg:px-[0]">
     <slot></slot>
   </main>
+  <!-- app footer -->
   <footer class="border-t p-[15px] mt-auto">
     <div class="w-full lg:w-[1000px] m-auto flex justify-between items-center">
       <span>© 2025 ShiftCare. All rights reserved.</span>

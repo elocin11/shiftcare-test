@@ -3,43 +3,24 @@
     <h1 class="text-[1.5rem] text-black">Discover our healthcare providers</h1>
     <div v-if="loading">Loading...</div>
     <ul v-else class="mt-[20px]">
-      <li class="flex mb-[50px]" v-for="doctor in doctors" :key="doctor.name">
-        <img src="https://placehold.co/150" class="rounded-full h-[150px] w-[150px]" />
-        <div class="ml-[30px]">
-          <span class="block text-[1.5rem] font-semibold text-black">Christy Schum</span>
-          <span class="block font-light">Timezone: Australia/Sydney</span>
-          <span class="block font-light">Status: Available</span>
-          <p class="block font-light">
-            Introduction: Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo ipsum porro
-            enim dolor!
-          </p>
-          <router-link to="{}">
-            <button
-              class="py-[5px] text-[#3594e4] font-semibold mt-[10px] flex items-center flex-column border-b border-[#3594e4]"
-            >
-              Book an appointment
-            </button>
-          </router-link>
-        </div>
+      <li v-for="doctor in doctors" :key="doctor.name" class="mb-[30px]">
+        <DoctorProfileCard :doctor="doctor" />
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import DoctorProfileCard from '@/components/DoctorProfileCard.vue'
+import { defineComponent, ref, reactive } from 'vue'
+import { type IDoctor } from '@/types/Doctor.ts'
 
-interface IDoctor {
-  name: string
-  timezone: string
-  day_of_week: string
-  available_at: string
-  available_until: string
-}
-
-export default {
+export default defineComponent({
+  components: {
+    DoctorProfileCard,
+  },
   setup() {
-    const doctors = ref<IDoctor[]>([
+    const doctors = reactive<IDoctor[]>([
       {
         name: 'Christy Schumm',
         timezone: 'Australia/Sydney',
@@ -84,9 +65,9 @@ export default {
       },
     ])
 
-    const loading = ref(true)
+    const loading = ref<boolean>(false)
 
     return { doctors, loading }
   },
-}
+})
 </script>
