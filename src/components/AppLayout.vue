@@ -26,7 +26,7 @@ import AppLogo from './icons/AppLogo.vue'
   <!-- app footer -->
   <footer class="border-t p-[15px] mt-auto">
     <div class="w-full lg:w-[1000px] m-auto flex justify-between items-center">
-      <span>© 2025 ShiftCare. All rights reserved.</span>
+      <span class="text-sm">© 2025 ShiftCare. All rights reserved.</span>
     </div>
   </footer>
 </template>

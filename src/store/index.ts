@@ -1,9 +1,13 @@
 import { createStore } from 'vuex'
-import doctor from './doctor'
+import doctorStore, { type IDoctorState } from './doctorStore'
 
-const store = createStore({
+export interface IRootState {
+  doctorStore: IDoctorState
+}
+
+const store = createStore<IRootState>({
   modules: {
-    doctor: doctor,
+    doctorStore: doctorStore,
   },
 })
 

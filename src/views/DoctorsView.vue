@@ -21,13 +21,13 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    const doctors = computed(() => store.state.doctor.doctorList)
-    const loading = computed(() => store.state.doctor.loading)
-    const error = computed(() => store.state.doctor.error)
+    const loading = computed(() => store.state.doctorStore.loading)
+    const error = computed(() => store.state.doctorStore.error)
+    const doctors = computed(() => store.state.doctorStore.doctors)
 
     onMounted(() => {
-      store.dispatch('doctor/fetchDoctorList')
-      console.log('fetch doctor!')
+      store.dispatch('doctorStore/fetchDoctors')
+      console.log('fetched doctor!')
     })
 
     return { doctors, loading, error }
