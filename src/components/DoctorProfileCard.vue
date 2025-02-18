@@ -3,12 +3,9 @@
     <img src="https://placehold.co/150" class="rounded-full h-[150px] w-[150px]" />
     <div class="ml-[30px]">
       <span class="block text-[1.5rem] font-semibold text-black">{{ data?.name }}</span>
+      <span class="block font-light">Specialization: N/A</span>
+      <span class="block font-light">Schedule: Monday, Tuesday </span>
       <span class="block font-light">Timezone: {{ data?.timezone }}</span>
-      <span class="block font-light">Status: Available</span>
-      <p class="block font-light">
-        Introduction: Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo ipsum porro enim
-        dolor!
-      </p>
       <router-link :to="`/doctors/${data?.name}`">
         <button
           class="py-[5px] text-[#3594e4] font-semibold mt-[10px] flex items-center flex-column border-b border-[#3594e4]"

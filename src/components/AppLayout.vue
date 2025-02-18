@@ -15,17 +15,22 @@ import AppLogo from './icons/AppLogo.vue'
           <li>
             <RouterLink to="/doctors">Find a Doctor</RouterLink>
           </li>
+          <li>
+            <RouterLink to="/appointments">My Appointments</RouterLink>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
   <!-- app content -->
-  <main class="w-full lg:w-[1000px] mx-auto pt-[90px] px-[15px] lg:px-[0]">
+  <main
+    class="flex flex-col flex-1 h-full w-full lg:w-[1000px] mx-auto pt-[80px] px-[15px] lg:px-[0]"
+  >
     <slot></slot>
   </main>
   <!-- app footer -->
-  <footer class="border-t p-[15px] mt-auto">
-    <div class="w-full lg:w-[1000px] m-auto flex justify-between items-center">
+  <footer class="h-[70px] border-t mt-auto">
+    <div class="h-full w-full lg:w-[1000px] m-auto flex justify-between items-center">
       <span class="text-sm">© 2025 ShiftCare. All rights reserved.</span>
     </div>
   </footer>

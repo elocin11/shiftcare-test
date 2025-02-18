@@ -52,14 +52,12 @@ const doctorStore = {
         const doctors = uniqBy(data, 'name')
 
         commit('setDoctors', doctors)
-
-        console.log(data, 'data')
+        // console.log(data, 'data')
       } catch (error: unknown) {
         if (error instanceof Error) {
           commit('setError', error.message)
         }
-
-        console.log(error, 'error')
+        // console.log(error, 'error')
       } finally {
         commit('setLoading', false)
       }
@@ -79,8 +77,9 @@ const doctorStore = {
 
         // find doctor by name
         const filteredList = data?.filter((d: IDoctor) => d.name === name)
-        console.log(name, 'name')
-        console.log(filteredList, 'filteredList')
+        // console.log(name, 'name')
+        // console.log(filteredList, 'filteredList')
+
         // aggregate day_of_week, available_at, available_until to schedule collection
         const doctor = filteredList.reduce((a: IDoctorProfile, i: IDoctor) => {
           if (!a.name) {
@@ -105,8 +104,7 @@ const doctorStore = {
         if (error instanceof Error) {
           commit('setError', error.message)
         }
-
-        console.log(error, 'error')
+        // console.log(error, 'error')
       } finally {
         commit('setLoading', false)
       }
