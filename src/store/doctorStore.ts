@@ -7,7 +7,7 @@ import { type IRootState } from '@/store/index'
 const API_URL = 'https://raw.githubusercontent.com/suyogshiftcare/jsontest/main/available.json'
 
 export interface IDoctorState {
-  doctors: IDoctor[]
+  doctors: IDoctorProfile[]
   doctorProfile: IDoctorProfile | null
   loading: boolean
   error: string | null
@@ -22,7 +22,7 @@ const doctorStore = {
     error: null,
   }),
   mutations: {
-    setDoctors(state: IDoctorState, payload: IDoctor[]) {
+    setDoctors(state: IDoctorState, payload: IDoctorProfile[]) {
       state.doctors = payload
     },
     setDoctorProfile(state: IDoctorState, payload: IDoctorProfile) {
@@ -125,6 +125,10 @@ const doctorStore = {
           return a
         }, {})
 
+        if (!doctor?.name) {
+          throw new Error('Doctor profile not found')
+        }
+
         // console.log(doctor, 'doctor')
 
         commit('setDoctorProfile', doctor)
@@ -139,7 +143,7 @@ const doctorStore = {
     },
   },
   getters: {
-    doctors: (state: IDoctorState): IDoctor[] => state.doctors,
+    doctors: (state: IDoctorState): IDoctorProfile[] => state.doctors,
     doctorProfile: (state: IDoctorState): IDoctorProfile | null => state.doctorProfile,
     loading: (state: IDoctorState): boolean => state.loading,
     error: (state: IDoctorState): string | null => state.error,

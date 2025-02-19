@@ -7,6 +7,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:ui": "vitest --ui",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
@@ -14,6 +15,7 @@
     "deploy": "vite build && gh-pages -d dist"
   },
   "dependencies": {
+    "@vitest/ui": "^3.0.6",
     "autoprefixer": "^10.4.20",
     "flatpickr": "^4.6.13",
     "lodash": "^4.17.21",
