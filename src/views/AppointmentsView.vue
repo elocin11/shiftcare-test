@@ -5,19 +5,19 @@
       {{ error }}
     </div>
     <div v-if="!loading && !error">
-      <h1 class="text-[1.5rem] text-black">Discover our healthcare providers</h1>
+      <h1 class="text-[1.5rem] text-black">My Appointments</h1>
       <ul class="mt-[20px]">
-        <li v-for="doctor in doctors" :key="doctor.name" class="mb-5">
-          <DoctorProfileCard :doctor="doctor" />
+        <li v-for="appointment in appointments" :key="appointment.name" class="mb-5">
+          <AppointmentCard :appointment="appointment" />
         </li>
       </ul>
-      <div v-if="!doctors.length">No data to display</div>
+      <div v-if="!appointments.length">No data to display</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import DoctorProfileCard from '@/components/DoctorProfileCard.vue'
+import AppointmentCard from '@/components/AppointmentCard.vue'
 import { computed, defineComponent, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import Loading from 'vue-loading-overlay'
@@ -25,26 +25,26 @@ import 'vue-loading-overlay/dist/css/index.css'
 
 export default defineComponent({
   components: {
-    DoctorProfileCard,
+    AppointmentCard,
     Loading,
   },
   setup() {
     const store = useStore()
-    const loading = computed(() => store.state.doctorStore.loading)
-    const error = computed(() => store.state.doctorStore.error)
-    const doctors = computed(() => store.state.doctorStore.doctors)
+    const loading = computed(() => store.state.appointmentStore.loading)
+    const error = computed(() => store.state.appointmentStore.error)
+    const appointments = computed(() => store.state.appointmentStore.appointments)
 
     onMounted(() => {
-      store.dispatch('doctorStore/fetchDoctors')
+      store.dispatch('appointmentStore/fetchAppointments')
       // console.log('fetched doctor!')
     })
 
     // clean up
     onUnmounted(() => {
-      store.commit('doctorStore/setError', null)
+      store.commit('appointmentStore/setError', null)
     })
 
-    return { doctors, loading, error }
+    return { appointments, loading, error }
   },
 })
 </script>

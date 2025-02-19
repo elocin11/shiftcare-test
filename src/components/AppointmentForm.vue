@@ -22,16 +22,18 @@
           >Select a time slot*</label
         >
         <ul v-if="slots.length">
-          <li v-for="slot in slots" :key="slot">
+          <li v-for="slot in slots" :key="slot.value">
             <input
               v-model="formData.schedule.slot"
               type="radio"
               name="slot"
-              :id="`slot-${slot}`"
-              :value="`${slot}`"
+              :id="`slot-${slot.value}`"
+              :value="`${slot.value}`"
+              :disabled="!slot.isAvailable"
+              :min="minDate"
               required
             />
-            <label :for="`slot-${slot}`">{{ slot }}</label>
+            <label :for="`slot-${slot.value}`">{{ slot.value }}</label>
           </li>
         </ul>
         <small v-else>Please select a valid and available date</small>
@@ -104,10 +106,20 @@
 </template>
 
 <script lang="ts">
-import type { IDoctorProfile, IDoctorSchedule } from '@/types/Doctor'
+import type { IDoctorProfile, IDoctorSchedule, IDoctor } from '@/types/Doctor'
+import type { IAppointment, ISlot } from '@/types/Appointment'
 import 'flatpickr/dist/flatpickr.css'
 import { uniqBy } from 'lodash'
-import { computed, defineComponent, reactive, ref, type PropType, watch, onMounted } from 'vue'
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  type PropType,
+  watch,
+  onMounted,
+  onUnmounted,
+} from 'vue'
 import FlatPickr from 'vue-flatpickr-component'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
@@ -145,10 +157,11 @@ export default defineComponent({
         slot: '',
       },
     })
-    const slots = ref([])
+    const minDate = moment().format('YYYY-MM-DD')
+    const slots = ref<ISlot[]>([])
     const loading = computed(() => store.state.appointmentStore.loading)
     const error = computed(() => store.state.appointmentStore.error)
-
+    const appointments = computed(() => store.state.appointmentStore.appointments)
     const enabledDays = computed(() => {
       const mappedDays = doctor?.schedule?.map((s: IDoctorSchedule) => s?.day_of_week)
       // distinct days of week, example: (Dr. Geovany Keebler contains 2 sets of thursday schedule )
@@ -158,7 +171,6 @@ export default defineComponent({
 
     const datePickerOptions = computed(() => {
       return {
-        isReadonly: false,
         disable: [
           (date: { getDay: () => number }) => {
             // Get the day index
@@ -170,7 +182,16 @@ export default defineComponent({
             // console.log(currentDayName, 'currentDayName')
 
             // If the day is not in the enabledDays array, return true to disable it
-            return !enabledDays.value.includes(currentDayName)
+            if (!enabledDays.value.includes(currentDayName)) return true
+
+            // const selectedDate = date.toISOString().split('T')[0] // Format the date to 'YYYY-MM-DD'
+            const selectedDate = moment(date as Date).format('YYYY-MM-DD')
+            if (selectedDate < minDate) {
+              return true // Disable this date
+            }
+
+            // If the date is valid, return false to keep it enabled
+            return false
           },
           // '2025-02-03', // test diable specific date
           // TODO: include dates that are no longer available where timeslots are fully booked
@@ -181,8 +202,8 @@ export default defineComponent({
     watch(
       () => formData.schedule.date,
       async (newDate, oldDate) => {
-        console.log(newDate, 'new')
-        console.log(oldDate, 'old')
+        // console.log(newDate, 'new')
+        // console.log(oldDate, 'old')
 
         if (newDate !== oldDate) {
           // set timeslots
@@ -194,35 +215,53 @@ export default defineComponent({
     )
 
     onMounted(() => {
+      store.dispatch('appointmentStore/fetchAppointments')
       setTimeslots()
+    })
+
+    // clean up
+    onUnmounted(() => {
+      store.commit('appointmentStore/setError', null)
     })
 
     const setTimeslots = async () => {
       const selectedDay = dayNames[moment(formData.schedule.date).day()]
-      console.log(selectedDay, 'selectedDay')
+      // console.log(selectedDay, 'selectedDay')
       // filter schedule
       const filteredSchedule = doctor?.schedule?.filter(
         (s: IDoctorSchedule) => s?.day_of_week === selectedDay,
       )
 
-      // console.table(filteredSchedule)
-
       // expected results ['7:00AM-7:30AM', '7:30AM-8:30']
-      const timeslots = await filteredSchedule?.reduce(async (a: string[], i: IDoctorSchedule) => {
+      const timeslots = filteredSchedule?.reduce((a: string[], i: IDoctorSchedule) => {
         //generate timeslots
-        const generatedSlots = await generateTimeslots(i.available_at, i.available_until)
-        // console.log(generatedSlots, 'generatedSlots')
-        return [...(await a), ...generatedSlots]
-        // console.log(a, 'a')
+        const generatedSlots = generateTimeslots(i.available_at, i.available_until)
+        return [...a, ...generatedSlots]
       }, [])
+      // console.log(timeslots)
 
-      console.log(timeslots, 'timeslots')
-      slots.value = timeslots
+      // validate slots availability
+      const validatedTimeslots = timeslots?.map((slot: string) => {
+        const isBooked = appointments?.value?.find(
+          (a: IAppointment) =>
+            a?.doctor === doctor.name &&
+            a?.schedule?.date === formData.schedule.date &&
+            a?.schedule?.slot === slot,
+        )
+
+        return {
+          value: slot,
+          isAvailable: !isBooked,
+        }
+      })
+
+      // console.log('validatedTimeslots', validatedTimeslots)
+      slots.value = validatedTimeslots
     }
 
     const submitForm = async () => {
       await store.dispatch('appointmentStore/saveFormData', formData)
-      console.log(formData, 'formData')
+      // console.log(formData, 'formData')
       if (!error.value) {
         router.push({ name: 'appointment-success' })
       }
@@ -236,6 +275,7 @@ export default defineComponent({
       datePickerOptions,
       submitForm,
       formData,
+      minDate,
     }
   },
 })
@@ -271,6 +311,11 @@ input[type='radio']:checked + label {
   background: #5fb587;
   color: #ffffff;
   border: 1px solid #5fb587;
+}
+
+input[type='radio']:disabled + label {
+  opacity: 30%;
+  cursor: not-allowed;
 }
 
 input:not(:placeholder-shown),

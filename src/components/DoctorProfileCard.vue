@@ -10,7 +10,7 @@
         <ul>
           <li
             v-for="schedule in data?.schedule"
-            :key="`${schedule.day_of_week}-${schedule.available_at}-${schedule.availabe_until}`"
+            :key="`${schedule.day_of_week}-${schedule.available_at}-${schedule.available_until}`"
           >
             {{ schedule.day_of_week }}: {{ schedule.available_at }} - {{ schedule.available_until }}
           </li>

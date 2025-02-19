@@ -1,8 +1,8 @@
 import moment from 'moment'
 // input start = 7:00AM, end 2:00PM
-const generateTimeslots = async (start: string, end: string) => {
+const generateTimeslots = (start: string, end: string) => {
   const slots = []
-  console.log(start, end)
+  // console.log(start, end)
   // results should be
   // return ['7:00AM - 7:30AM', '7:30AM - 8:00AM']
 

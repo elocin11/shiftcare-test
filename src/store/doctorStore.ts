@@ -76,13 +76,13 @@ const doctorStore = {
           return a
         }, [])
 
-        console.log(doctors, 'doctors')
+        // console.log(doctors, 'doctors')
 
         commit('setDoctors', doctors)
         // console.log(data, 'data')
       } catch (error: unknown) {
         if (error instanceof Error) {
-          commit('setError', error.message)
+          commit('setError', 'Error encountered: ' + error.message)
         }
         // console.log(error, 'error')
       } finally {
@@ -129,7 +129,7 @@ const doctorStore = {
         commit('setDoctorProfile', doctor)
       } catch (error: unknown) {
         if (error instanceof Error) {
-          commit('setError', error.message)
+          commit('setError', 'Error encountered: ' + error.message)
         }
         // console.log(error, 'error')
       } finally {

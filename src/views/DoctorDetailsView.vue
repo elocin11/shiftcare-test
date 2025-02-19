@@ -1,7 +1,10 @@
 <template>
   <div class="mt-[20px] mb-[30px]">
     <loading v-model:active="loading" :can-cancel="true" :is-full-page="false" />
-    <div v-if="!loading">
+    <div v-if="error" class="p-[20px] mt-5 text-[#f15054] bg-[#ffe5e4] border-0 rounded border">
+      {{ error }}
+    </div>
+    <div v-if="!loading && !error">
       <DoctorProfileCard :doctor="doctor" />
       <AppointmentForm :doctor="doctor" />
     </div>
@@ -11,7 +14,7 @@
 <script lang="ts">
 import AppointmentForm from '@/components/AppointmentForm.vue'
 import DoctorProfileCard from '@/components/DoctorProfileCard.vue'
-import { computed, defineComponent, onMounted, watch } from 'vue'
+import { computed, defineComponent, onMounted, onUnmounted, watch } from 'vue'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
 import { useRoute, useRouter } from 'vue-router'
@@ -34,13 +37,18 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch('doctorStore/fetchDoctorProfile', route?.params?.name)
-      console.log('mounted')
+      // console.log('mounted')
     })
 
     watch([loading, doctor], ([watchLoading, watchDoctor]) => {
-      if (!watchLoading && !watchDoctor.name) {
+      if (!watchLoading && !watchDoctor?.name && !error.value) {
         router.push({ name: 'not-found' })
       }
+    })
+
+    // clean up
+    onUnmounted(() => {
+      store.commit('doctorStore/setError', null)
     })
 
     return {

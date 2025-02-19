@@ -12,3 +12,8 @@ export interface IAppointment {
   doctor: string
   schedule: IAppointmentSchedule
 }
+
+export interface ISlot {
+  value: string
+  isAvailable: boolean
+}
