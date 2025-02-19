@@ -1,7 +1,7 @@
 import { type IDoctor, type IDoctorProfile } from '@/types/Doctor'
 import type { ActionContext } from 'vuex/types/index.js'
 import { type IRootState } from '@/store/index'
-import { uniqBy } from 'lodash'
+// import { uniqBy } from 'lodash'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -49,7 +49,34 @@ const doctorStore = {
         const data = await response.json()
 
         // distinct doctors
-        const doctors = uniqBy(data, 'name')
+        // const doctors = uniqBy(data, 'name')
+        const doctors = data.reduce((a: IDoctorProfile[], i: IDoctor) => {
+          const exist = a.find((d: IDoctorProfile) => d.name === i.name)
+          // exist in accumulator update schedule instead
+          if (exist) {
+            exist.schedule?.push({
+              day_of_week: i.day_of_week,
+              available_at: i.available_at,
+              available_until: i.available_until,
+            })
+          } else {
+            a.push({
+              name: i.name,
+              timezone: i.timezone,
+              schedule: [
+                {
+                  day_of_week: i.day_of_week,
+                  available_at: i.available_at,
+                  available_until: i.available_until,
+                },
+              ],
+            })
+          }
+
+          return a
+        }, [])
+
+        console.log(doctors, 'doctors')
 
         commit('setDoctors', doctors)
         // console.log(data, 'data')

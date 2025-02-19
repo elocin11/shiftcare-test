@@ -13,7 +13,7 @@ const appointmentStore = {
   namespaced: true,
   state: () => ({
     loading: false,
-    error: false,
+    error: null,
     formData: null,
     appointments: [],
   }),
@@ -34,7 +34,15 @@ const appointmentStore = {
       data: IAppointment,
     ) {
       commit('setLoading', true)
+
       try {
+        // added here a simple custom validation for the selected date and slot,
+        // to ensure validation if html5 required property failed to work
+        // TODO: improve validation, per field, per type
+        if (!data.schedule.date || !data.schedule.slot) {
+          throw new Error('Date and slot are required')
+        }
+
         // simulate loading for 2seconds
         await new Promise((resolve) => setTimeout(resolve, 2000))
         const currentAppointments = JSON.parse(
@@ -43,6 +51,9 @@ const appointmentStore = {
         const newAppointments = JSON.stringify([...currentAppointments, data])
         // console.log(newAppointments, 'newAppointments')
         localStorage.setItem('shiftcare-appointments', newAppointments)
+
+        // clear error
+        commit('setError', null)
       } catch (error: unknown) {
         if (error instanceof Error) {
           commit('setError', error?.message)

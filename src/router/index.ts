@@ -23,6 +23,12 @@ const router = createRouter({
       component: () => import('../views/DoctorDetailsView.vue'),
     },
     {
+      path: '/appointment-success',
+      name: 'appointment-success',
+      props: true,
+      component: () => import('../views/AppointmentSuccessView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       props: true,
