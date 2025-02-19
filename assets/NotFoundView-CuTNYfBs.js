@@ -1,0 +1,1 @@
+import{_ as o,c as s,a as t,o as c}from"./index-CfPvgIzu.js";const r={},n={class:"m-auto"};function a(d,e){return c(),s("div",n,e[0]||(e[0]=[t("h3",{class:"text-center text-[5rem] font-bold"},"404",-1),t("h3",{class:"text-center text-[1.5rem]"},"Resource Not Found",-1)]))}const l=o(r,[["render",a]]);export{l as default};
