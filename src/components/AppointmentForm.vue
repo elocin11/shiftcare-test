@@ -106,7 +106,7 @@
 </template>
 
 <script lang="ts">
-import type { IDoctorProfile, IDoctorSchedule, IDoctor } from '@/types/Doctor'
+import type { IDoctorProfile, IDoctorSchedule } from '@/types/Doctor'
 import type { IAppointment, ISlot } from '@/types/Appointment'
 import 'flatpickr/dist/flatpickr.css'
 import { uniqBy } from 'lodash'

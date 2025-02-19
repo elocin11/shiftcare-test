@@ -2,7 +2,7 @@
 import IconSupport from '../components/icons/IconSupport.vue'
 </script>
 <template>
-  <div class="mt-[50px] grid grid-cols-[45%,55%] gap-4">
+  <div class="m-auto grid grid-cols-[45%,55%] gap-4">
     <div class="flex items-center">
       <div class="pr-15">
         <h1 class="text-[2.5rem] font-semibold text-black">Welcome to ShiftCare</h1>

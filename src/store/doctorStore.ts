@@ -3,7 +3,8 @@ import type { ActionContext } from 'vuex/types/index.js'
 import { type IRootState } from '@/store/index'
 // import { uniqBy } from 'lodash'
 
-const API_URL = import.meta.env.VITE_API_URL
+// const API_URL = import.meta.env.VITE_API_URL
+const API_URL = 'https://raw.githubusercontent.com/suyogshiftcare/jsontest/main/available.json'
 
 export interface IDoctorState {
   doctors: IDoctor[]
