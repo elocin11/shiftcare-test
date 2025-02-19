@@ -12,7 +12,15 @@
     }
   ],
   "compilerOptions": {
-    "types": ["vue", "vuex", "@types/node"],
+    "types": [
+      "vue",
+      "vuex/types",
+      "@types/node",
+      "vuex/types/index.d.ts",
+      "vuex/types/helpers.d.ts",
+      "vuex/types/logger.d.ts",
+      "vuex/types/vue.d.ts"
+    ],
     "typeRoots": ["./node_modules/@types", "node_modules/vuex/types"]
   }
 }

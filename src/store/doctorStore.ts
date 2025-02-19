@@ -97,7 +97,7 @@ const doctorStore = {
           return a
         }, {})
 
-        console.log(doctor, 'doctor')
+        // console.log(doctor, 'doctor')
 
         commit('setDoctorProfile', doctor)
       } catch (error: unknown) {
