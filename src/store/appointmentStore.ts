@@ -96,6 +96,8 @@ const appointmentStore = {
 
         // clear error
         commit('setError', null)
+        // for testing false positive
+        // commit('setError', 'Cannot read property of undefined')
       } catch (error: unknown) {
         if (error instanceof Error) {
           commit('setError', 'Error encountered: ' + error.message)

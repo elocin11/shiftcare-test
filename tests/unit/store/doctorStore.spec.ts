@@ -1,12 +1,18 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import store from '../../../src/store/index'
+import doctorStore, { IDoctorState } from '../../../src/store/doctorStore'
 import type { IDoctor, IDoctorProfile } from '../../../src/types/Doctor'
-
-global.fetch = vi.fn()
 
 // mutations
 describe('Doctor Store Mutations', () => {
-  it('should commit a mutation to set doctors state correctly', () => {
+  const doctorState:IDoctorState = {
+    doctors: [],
+    doctorProfile: null,
+    loading: false,
+    error: null,
+  } 
+
+  it('should set the doctors state correctly', () => {
     const payload: IDoctorProfile[] = [
       {
         name: 'Christy Schumm',
@@ -15,50 +21,47 @@ describe('Doctor Store Mutations', () => {
       },
     ]
 
-    store.commit('doctorStore/setDoctors', payload)
+    doctorStore.mutations.setDoctors(doctorState, payload)
 
-    expect(store.state.doctorStore.doctors).toEqual(payload)
-    expect(store.state.doctorStore.doctors.length).toBe(1)
-    expect(store.state.doctorStore.doctors[0].name).toBe('Christy Schumm')
-    expect(store.state.doctorStore.doctors[0].timezone).toBe('Australia/Sydney')
-    expect(store.state.doctorStore.doctors[0].schedule.length).toBe(1)
+    expect(doctorState.doctors.length).toBe(1)
+    expect(doctorState.doctors[0].name).toBe('Christy Schumm')
+    expect(doctorState.doctors[0].timezone).toBe('Australia/Sydney')
+    expect(doctorState.doctors[0].schedule.length).toBe(1)
+    expect(doctorState.doctors).toEqual(payload)
   })
 
-  it('should commit a mutation to set doctor profile state correctly', () => {
+  it('should set doctor profile state correctly', () => {
     const payload: IDoctorProfile = {
       name: 'Christy Schumm',
       timezone: 'Australia/Sydney',
       schedule: [{ day_of_week: 'Monday', available_at: ' 9:00AM', available_until: ' 5:30PM' }],
     }
 
-    store.commit('doctorStore/setDoctorProfile', payload)
+    doctorStore.mutations.setDoctorProfile(doctorState, payload)
 
-    expect(store.state.doctorStore.doctorProfile).toEqual(payload)
-    expect(store.state.doctorStore.doctorProfile.name).toBe('Christy Schumm')
-    expect(store.state.doctorStore.doctorProfile.timezone).toBe('Australia/Sydney')
-    expect(store.state.doctorStore.doctorProfile.schedule.length).toBe(1)
+    expect(doctorState.doctorProfile.name).toBe('Christy Schumm')
+    expect(doctorState.doctorProfile.timezone).toBe('Australia/Sydney')
+    expect(doctorState.doctorProfile.schedule.length).toBe(1)
+    expect(doctorState.doctorProfile).toEqual(payload)
   })
 
-  it('should commit a mutation to set loading state correctly', () => {
-    store.commit('doctorStore/setLoading', true)
+  it('should set loading state correctly', () => {
+    doctorStore.mutations.setLoading(doctorState, true)
 
-    expect(store.state.doctorStore.loading).toBeTruthy()
+    expect(doctorState.loading).toBeTruthy()
   })
 
-  it('should commit a mutation to set error state correctly', () => {
-    store.commit('doctorStore/setError', 'An error occured')
+  it('should set error state correctly', () => {
+    doctorStore.mutations.setError(doctorState, 'An error occured')
 
-    expect(store.state.doctorStore.error).toBe('An error occured')
+    expect(doctorState.error).toBe('An error occured')
   })
 })
 
+// actions
 describe('Doctor Store Actions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.commit('doctorStore/setError', null)
-    store.commit('doctorStore/setLoading', false)
-    store.commit('doctorStore/setDoctors', [])
-    store.commit('doctorStore/setDoctorProfile', null)
   })
 
   it('should fetch doctors and commit them to the doctors state', async () => {
@@ -78,16 +81,20 @@ describe('Doctor Store Actions', () => {
         available_until: '10:00AM',
       },
     ]
+
+    const mockCommit = vi.fn()
+    global.fetch = vi.fn()
+    
     global.fetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockResponse),
     })
 
-    await store.dispatch('doctorStore/fetchDoctors')
+    doctorStore.actions.fetchDoctors({ commit: mockCommit })
 
-    expect(store.state.doctorStore.doctors.length).toBe(2)
-    expect(store.state.doctorStore.loading).toBe(false)
-    expect(store.state.doctorStore.error).toBeNull()
+    expect(mockCommit).toHaveBeenCalledWith('setLoading', true);
+    expect(mockCommit).toHaveBeenCalledWith('setLoading', false);
+    expect(mockCommit).toHaveBeenCalledWith('seDoctors', expect.arrayContaining(mockResponse));
   })
 
   it('should handle error during fetching doctors', async () => {
@@ -166,4 +173,47 @@ describe('Doctor Store Actions', () => {
     expect(store.state.doctorStore.loading).toBe(false)
     expect(store.state.doctorStore.error).toBe('Error encountered: Doctor profile not found')
   })
+})
+
+// getters
+describe('Doctor Store Getters', () => {
+  it('should return the correct loading state', () => {
+    const state = { loading: true, error: null, doctorProfile: null, doctors: [] };
+    expect(doctorStore.getters.loading(state)).toBe(true);
+  });
+
+  it('should return the correct error state', () => {
+    const state = { loading: false, error: 'Error occured: undefined', doctorProfile: null, doctors: [] };
+    expect(doctorStore.getters.error(state)).toBe('Error occured: undefined');
+  });
+
+  it('should return the correct doctors state', () => {
+    const doctorsState: IDoctorProfile[] = [
+      {
+        name: 'Christy Schumm',
+        timezone: 'Australia/Sydney',
+        schedule: [{ day_of_week: 'Monday', available_at: ' 9:00AM', available_until: ' 5:30PM' }],
+      },
+    ]
+
+    const state = { loading: false, error: null, doctorProfile: null, doctors: doctorsState };
+    
+    expect(doctorStore.getters.doctors(state).length).toBe(1);
+    expect(doctorStore.getters.doctors(state)[0].name).toBe('Christy Schumm');
+    expect(doctorStore.getters.doctors(state)[0].schedule.length).toBe(1);
+  });
+
+  it('should return the correct doctor profile state', () => {
+    const doctorProfileState: IDoctorProfile = 
+      {
+        name: 'Christy Schumm',
+        timezone: 'Australia/Sydney',
+        schedule: [{ day_of_week: 'Monday', available_at: ' 9:00AM', available_until: ' 5:30PM' }],
+      }
+  
+    const state = { loading: false, error: null, doctorProfile: doctorProfileState, doctors: [] };
+    
+    expect(doctorStore.getters.doctorProfile(state).name).toBe('Christy Schumm');
+    expect(doctorStore.getters.doctorProfile(state).schedule.length).toBe(1);
+  });
 })
